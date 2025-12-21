@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>New Driving Experience</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="../style.css" />
+  </head>
+  <body>
+    <main class="main-container">
+      <h1>Record Driving Experience</h1>
+
+      <?php if ($success): ?>
+      <div class="message success-message">
+        <span class="message-icon">✓</span>
+        <p>Driving experience saved successfully!</p>
+      </div>
+      <?php endif; ?>
+
+      <?php if (!empty($errors)): ?>
+      <div class="message error-message">
+        <span class="message-icon">✗</span>
+        <ul>
+          <?php foreach ($errors as $error): ?>
+          <li><?= htmlspecialchars($error) ?></li>
+          <?php endforeach; ?>
+        </ul>
+      </div>
+      <?php endif; ?>
+
+      <form method="post" class="driving-form">
+        <label>Driving Date</label>
+        <input
+          type="date"
+          name="driving_date"
+          value="<?= $today ?>"
+          max="<?= date('Y-m-d') ?>"
+          required
+        />
+
+        <label>Start Time</label>
+        <input type="time" name="start_time" value="<?= $now ?>" required />
+
+        <label>End Time</label>
+        <input
+          type="time"
+          name="end_time"
+          value="<?= $now ?>"
+          min="<?= $now ?>"
+          required
+        />
+
+        <label>Mileage (km)</label>
+        <input
+          type="number"
+          name="mileage_km"
+          step="0.1"
+          min="0"
+          inputmode="decimal"
+          pattern="[0-9]*\.?[0-9]*"
+          required
+        />
+
+        <label>Journey Type</label>
+        <select name="journey" required>
+          <option value="">-- Choose --</option>
+          <?php if (!empty($journeyList)): ?>
+          <?php foreach ($journeyList as $j): ?>
+          <option value="<?= $j['id'] ?>">
+            <?= htmlspecialchars($j['label']) ?>
+          </option>
+          <?php endforeach; ?>
+          <?php else: ?>
+          <option value="" disabled>No journey types available</option>
+          <?php endif; ?>
+        </select>
+
+        <label>Road Surface</label>
+        <select name="surface" required>
+          <option value="">-- Choose --</option>
+          <?php if (!empty($surfaceList)): ?>
+          <?php foreach ($surfaceList as $s): ?>
+          <option value="<?= $s['id'] ?>">
+            <?= htmlspecialchars($s['label']) ?>
+          </option>
+          <?php endforeach; ?>
+          <?php else: ?>
+          <option value="" disabled>No road surfaces available</option>
+          <?php endif; ?>
+        </select>
+
+        <label>Traffic Type</label>
+        <select name="traffic" required>
+          <option value="">-- Choose --</option>
+          <?php if (!empty($trafficList)): ?>
+          <?php foreach ($trafficList as $t): ?>
+          <option value="<?= $t['id'] ?>">
+            <?= htmlspecialchars($t['label']) ?>
+          </option>
+          <?php endforeach; ?>
+          <?php else: ?>
+          <option value="" disabled>No traffic types available</option>
+          <?php endif; ?>
+        </select>
+
+        <fieldset class="weather-fieldset">
+          <legend>Weather Conditions</legend>
+          <?php if (!empty($weatherList)): ?>
+          <div class="checkbox-group">
+            <?php foreach ($weatherList as $w): ?>
+            <label class="checkbox-label">
+              <input type="checkbox" name="weather[]" value="<?= $w['id'] ?>" />
+              <span class="checkbox-custom"></span>
+              <span class="checkbox-text"
+                ><?= htmlspecialchars($w['label']) ?></span
+              >
+            </label>
+            <?php endforeach; ?>
+          </div>
+          <?php else: ?>
+          <p style="color: #ff7c7c; padding: 10px">
+            No weather conditions available. Please add some in Manage
+            Variables.
+          </p>
+          <?php endif; ?>
+        </fieldset>
+
+        <button type="submit" class="red-button">Save Experience</button>
+      </form>
+
+      <nav style="text-align: center; margin-top: 20px">
+        <a
+          href="index.php"
+          class="red-button back-to-home"
+          style="display: inline-block; width: auto; margin: 0 10px"
+        >
+          Back to Home
+        </a>
+        <a
+          href="dashboard.php"
+          class="red-button back-to-home"
+          style="display: inline-block; width: auto; margin: 0 10px"
+        >
+          View Dashboard
+        </a>
+      </nav>
+    </main>
+  </body>
+</html>

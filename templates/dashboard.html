@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Dashboard – Driving Experiences</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="../style.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdn.datatables.net/1.13.7/css/jquery.dataTables.min.css"
+    />
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
+  </head>
+  <body>
+    <main class="report-container">
+      <h1>Driving Experiences Dashboard</h1>
+
+      <article class="total-amount">
+        Total Distance Driven:
+        <strong
+          ><?= number_format((float)$totalKm, 2) ?>
+          km</strong
+        >
+      </article>
+
+      <section class="report-block">
+        <h2>All Driving Experiences</h2>
+
+        <article class="records-table-container">
+          <table id="experiencesTable" class="records-table">
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Time</th>
+                <th>Distance (km)</th>
+                <th>Weather</th>
+                <th>Journey</th>
+                <th>Traffic</th>
+                <th>Road Surface</th>
+              </tr>
+            </thead>
+            <tbody>
+              <?php if (empty($experiences)): ?>
+              <tr>
+                <td
+                  colspan="7"
+                  style="text-align: center; padding: 30px; color: #999"
+                >
+                  No driving experiences recorded yet.
+                  <a href="new_experience.php" style="color: #ff5784"
+                    >Add your first experience</a
+                  >
+                </td>
+              </tr>
+              <?php else: ?>
+              <?php foreach ($experiences as $exp): ?>
+              <tr>
+                <td><?= htmlspecialchars($exp['driving_date']) ?></td>
+                <td>
+                  <?= htmlspecialchars($exp['start_time']) ?>
+                  –
+                  <?= htmlspecialchars($exp['end_time']) ?>
+                </td>
+                <td><?= number_format((float)$exp['mileage_km'], 1) ?></td>
+                <td><?= htmlspecialchars($exp['weather'] ?? 'N/A') ?></td>
+                <td><?= htmlspecialchars($exp['journey']) ?></td>
+                <td><?= htmlspecialchars($exp['traffic']) ?></td>
+                <td><?= htmlspecialchars($exp['surface']) ?></td>
+              </tr>
+              <?php endforeach; ?>
+              <?php endif; ?>
+            </tbody>
+          </table>
+        </article>
+      </section>
+
+      <nav style="text-align: center; margin-top: 30px">
+        <a
+          href="new_experience.php"
+          class="red-button back-to-home"
+          style="display: inline-block; width: auto; margin: 0 10px"
+        >
+          Add New Experience
+        </a>
+        <a
+          href="index.php"
+          class="red-button back-to-home"
+          style="display: inline-block; width: auto; margin: 0 10px"
+        >
+          Home
+        </a>
+      </nav>
+    </main>
+
+    <script>
+      $(document).ready(function () {
+        $("#experiencesTable").DataTable({
+          order: [[0, "desc"]],
+          pageLength: 25,
+          lengthMenu: [
+            [10, 25, 50, -1],
+            [10, 25, 50, "All"],
+          ],
+          language: {
+            search: "Search:",
+            lengthMenu: "Show _MENU_ entries",
+            info: "Showing _START_ to _END_ of _TOTAL_ entries",
+            infoEmpty: "No entries to show",
+            infoFiltered: "(filtered from _MAX_ total entries)",
+          },
+          responsive: true,
+        });
+      });
+    </script>
+  </body>
+</html>

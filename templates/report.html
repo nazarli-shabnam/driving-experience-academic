@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Driving Experience Statistics</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+<main class="report-container">
+    <h1>Driving Statistics</h1>
+
+    <section class="report-block filter-section">
+        <h2>Filter Statistics</h2>
+        <form method="get" action="report.php" class="filter-form">
+            <div class="filter-grid">
+                <div>
+                    <label>Date From:</label>
+                    <input type="date" name="date_from" value="<?= htmlspecialchars($dateFrom) ?>">
+                </div>
+                <div>
+                    <label>Date To:</label>
+                    <input type="date" name="date_to" value="<?= htmlspecialchars($dateTo) ?>">
+                </div>
+                <div>
+                    <label>Weather:</label>
+                    <select name="filter_weather">
+                        <option value="0">-- All --</option>
+                        <?php foreach ($weatherList as $w): ?>
+                            <option value="<?= $w['id'] ?>" <?= $filterWeather == $w['id'] ? 'selected' : '' ?>>
+                                <?= htmlspecialchars($w['label']) ?>
+                            </option>
+                        <?php endforeach; ?>
+                    </select>
+                </div>
+                <div>
+                    <label>Journey Type:</label>
+                    <select name="filter_journey">
+                        <option value="0">-- All --</option>
+                        <?php foreach ($journeyList as $j): ?>
+                            <option value="<?= $j['id'] ?>" <?= $filterJourney == $j['id'] ? 'selected' : '' ?>>
+                                <?= htmlspecialchars($j['label']) ?>
+                            </option>
+                        <?php endforeach; ?>
+                    </select>
+                </div>
+                <div>
+                    <label>Road Surface:</label>
+                    <select name="filter_surface">
+                        <option value="0">-- All --</option>
+                        <?php foreach ($surfaceList as $s): ?>
+                            <option value="<?= $s['id'] ?>" <?= $filterSurface == $s['id'] ? 'selected' : '' ?>>
+                                <?= htmlspecialchars($s['label']) ?>
+                            </option>
+                        <?php endforeach; ?>
+                    </select>
+                </div>
+                <div>
+                    <label>Traffic:</label>
+                    <select name="filter_traffic">
+                        <option value="0">-- All --</option>
+                        <?php foreach ($trafficList as $t): ?>
+                            <option value="<?= $t['id'] ?>" <?= $filterTraffic == $t['id'] ? 'selected' : '' ?>>
+                                <?= htmlspecialchars($t['label']) ?>
+                            </option>
+                        <?php endforeach; ?>
+                    </select>
+                </div>
+            </div>
+            <div class="filter-buttons">
+                <button type="submit" class="red-button filter-btn">Apply Filters</button>
+                <a href="report.php" class="red-button filter-btn filter-btn-clear">Clear Filters</a>
+            </div>
+        </form>
+    </section>
+
+    <section class="report-block">
+        <h2>Weather Conditions</h2>
+        <canvas id="weatherChart"></canvas>
+
+        <table class="records-table">
+            <thead>
+                <tr>
+                    <th>Weather</th>
+                    <th>Occurrences</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php foreach ($weatherStats as $row): ?>
+                    <tr>
+                        <td><?= htmlspecialchars($row['weather']) ?></td>
+                        <td><?= $row['count'] ?></td>
+                    </tr>
+                <?php endforeach; ?>
+            </tbody>
+        </table>
+    </section>
+
+    <section class="report-block">
+        <h2>Journey Types</h2>
+        <canvas id="journeyChart"></canvas>
+    </section>
+
+    <section class="report-block">
+        <h2>Traffic Conditions</h2>
+        <canvas id="trafficChart"></canvas>
+    </section>
+
+    <section class="report-block">
+        <h2>Road Surfaces</h2>
+        <canvas id="surfaceChart"></canvas>
+    </section>
+
+    <nav style="text-align: center; margin-top: 30px;">
+        <a href="dashboard.php" class="red-button back-to-home" style="display: inline-block; width: auto; margin: 0 10px;">
+            Back to Dashboard
+        </a>
+        <a href="index.php" class="red-button back-to-home" style="display: inline-block; width: auto; margin: 0 10px;">
+            Home
+        </a>
+    </nav>
+</main>
+
+<script>
+new Chart(document.getElementById('weatherChart'), {
+    type: 'pie',
+    data: {
+        labels: <?= json_encode($weatherLabels) ?>,
+        datasets: [{
+            data: <?= json_encode($weatherCounts) ?>,
+            backgroundColor: [
+                '#ff7da0', '#81BFDA', '#9ABF80',
+                '#FAB12F', '#FA812F', '#5A6C57', '#4B4376'
+            ],
+            borderWidth: 1
+        }]
+    },
+    options: {
+        responsive: true,
+        plugins: {
+            legend: {
+                position: 'bottom',
+                labels: {
+                    color: '#e0e0e0',
+                    font: {
+                        size: 13
+                    },
+                    padding: 15
+                }
+            },
+            tooltip: {
+                callbacks: {
+                    label: function(context) {
+                        return `${context.label}: ${context.raw}`;
+                    }
+                }
+            }
+        }
+    }
+});
+
+new Chart(document.getElementById('journeyChart'), {
+    type: 'pie',
+    data: {
+        labels: <?= json_encode($journeyLabels) ?>,
+        datasets: [{
+            data: <?= json_encode($journeyCounts) ?>,
+            backgroundColor: ['#4B4376','#9EDF9C','#9694FF','#47663B']
+        }]
+    }
+});
+
+new Chart(document.getElementById('trafficChart'), {
+    type: 'pie',
+    data: {
+        labels: <?= json_encode($trafficLabels) ?>,
+        datasets: [{
+            data: <?= json_encode($trafficCounts) ?>,
+            backgroundColor: ['#FAB12F','#FA812F','#FA4032','#B1D690']
+        }]
+    },
+    options: {
+        responsive: true,
+        plugins: {
+            legend: {
+                position: 'bottom',
+                labels: {
+                    color: '#e0e0e0'
+                }
+            }
+        }
+    }
+});
+
+new Chart(document.getElementById('surfaceChart'), {
+    type: 'pie',
+    data: {
+        labels: <?= json_encode($surfaceLabels) ?>,
+        datasets: [{
+            data: <?= json_encode($surfaceCounts) ?>,
+            backgroundColor: ['#9ABF80','#81BFDA','#4B4376','#FAB12F','#FA812F','#5A6C57']
+        }]
+    },
+    options: {
+        responsive: true,
+        plugins: {
+            legend: {
+                position: 'bottom',
+                labels: {
+                    color: '#e0e0e0'
+                }
+            }
+        }
+    }
+});
+</script>
+
+</body>
+</html>
